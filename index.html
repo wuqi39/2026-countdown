@@ -353,9 +353,6 @@
         let countdownInterval;
         let isCountdownDone = false;
         let audioContext;
-        let countdownVoice;
-        let bellSound;
-        let celebrationSound;
         
         // 预设祝福语文本
         const greetings = [
@@ -568,6 +565,8 @@
             }, 3000);
             
             launchFireworks();
+            // 添加持续放烟花的定时器
+            setInterval(launchFireworks, 2000);
         }
 
         function createSnowflake() {
