@@ -319,7 +319,6 @@
         </div>
         <div class="new-year-text" id="new-year-text">🎉 2026新年快乐！🎉</div>
         <div class="buttons">
-            <button class="btn" id="firework-btn">点击放烟花</button>
             <button class="btn btn-secondary" id="screenshot-btn">生成我的倒计时卡片</button>
         </div>
     </div>
@@ -348,7 +347,8 @@
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         const TARGET_DATE = new Date('2026-01-01T00:00:00').getTime();
-        const name = new URLSearchParams(window.location.search).get('name') || '亲爱的';
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name') || '亲爱的';
         let countdownInterval;
         let isCountdownDone = false;
         let audioContext;
@@ -366,7 +366,6 @@
         const modalMessage = document.getElementById('modal-message');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const closeModal = document.getElementById('close-modal');
-        const fireworkBtn = document.getElementById('firework-btn');
         const screenshotBtn = document.getElementById('screenshot-btn');
         const screenshotModal = document.getElementById('screenshot-modal');
         const closeScreenshotModal = document.getElementById('close-screenshot-modal');
@@ -675,11 +674,7 @@
             requestAnimationFrame(animateFireworks);
         }
 
-        // 点击按钮放烟花
-        fireworkBtn.addEventListener('click', () => {
-            if (!audioContext) initAudio();
-            launchFireworks();
-        });
+
 
         // 点击页面任意位置放烟花
         document.addEventListener('click', (e) => {
