@@ -23,7 +23,7 @@
 
 1. **创建GitHub仓库**
    - 登录GitHub，点击右上角 "+" → "New repository"
-   - 仓库名称：`2026-countdown`（或任意名称）
+   - 仓库名称：`2026-countdown`
    - 选择 "Public" 或 "Private"
    - 勾选 "Add a README file"
    - 点击 "Create repository"
