@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="2026跨年倒计时 - 专属你的跨年祝福">
+    <title>2026跨年倒计时</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            color: #fff;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            z-index: 10;
+            position: relative;
+        }
+
+        .greeting {
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            margin-bottom: 30px;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            to { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+
+        .time-value {
+            font-size: clamp(2.5rem, 12vw, 5rem);
+            font-weight: bold;
+            /* 使用备用颜色方案，确保在所有浏览器中可见 */
+            color: #fff;
+            background: linear-gradient(180deg, #fff 0%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .time-value.bounce {
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .time-value.flash {
+            animation: flash 0.3s ease;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .time-value.urgent {
+            color: #ff6b6b;
+            -webkit-text-fill-color: #ff6b6b;
+            animation: pulse 0.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .time-label {
+            font-size: clamp(0.8rem, 3vw, 1rem);
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+
+        .new-year-text {
+            font-size: clamp(1.5rem, 6vw, 3rem);
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            animation: celebrate 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #1a1a2e;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .modal-message {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ffd700;
+            transform: rotate(90deg);
+        }
+
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: #fff;
+            font-size: 1rem;
+            pointer-events: none;
+            z-index: 5;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 5;
+            animation: confetti-fall linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(720deg); }
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .screenshot-preview {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .share-hint {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .countdown {
+                gap: 10px;
+            }
+
+            .time-unit {
+                min-width: 60px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="main-content">
+        <div class="greeting" id="greeting">亲爱的，距离2026年还有</div>
+        <div class="countdown" id="countdown">
+            <div class="time-unit">
+                <div class="time-value" id="days">000</div>
+                <div class="time-label">天</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="hours">00</div>
+                <div class="time-label">时</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="minutes">00</div>
+                <div class="time-label">分</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="seconds">00</div>
+                <div class="time-label">秒</div>
+            </div>
+        </div>
+        <div class="new-year-text" id="new-year-text">🎉 2026新年快乐！🎉</div>
+        <div class="buttons">
+            <button class="btn" id="firework-btn">点击放烟花</button>
+            <button class="btn btn-secondary" id="screenshot-btn">生成我的倒计时卡片</button>
+        </div>
+    </div>
+
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div class="modal" id="greeting-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <div class="modal-title">🎊 新年快乐 🎊</div>
+            <div class="modal-message" id="modal-message"></div>
+            <button class="btn" id="close-modal-btn">关闭祝福</button>
+        </div>
+    </div>
+
+    <div class="modal" id="screenshot-modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-screenshot-modal">&times;</span>
+            <div class="modal-title">📸 倒计时卡片</div>
+            <div id="screenshot-container"></div>
+            <div class="share-hint">长按图片保存，分享到社交平台</div>
+            <button class="btn" id="download-btn">下载图片</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        const TARGET_DATE = new Date('2026-01-01T00:00:00').getTime();
+        const name = new URLSearchParams(window.location.search).get('name') || '亲爱的';
+        let countdownInterval;
+        let isCountdownDone = false;
+        let audioContext;
+        let countdownVoice;
+        let bellSound;
+        let celebrationSound;
+
+        const greetingEl = document.getElementById('greeting');
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const newYearTextEl = document.getElementById('new-year-text');
+        const greetingModal = document.getElementById('greeting-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const closeModal = document.getElementById('close-modal');
+        const fireworkBtn = document.getElementById('firework-btn');
+        const screenshotBtn = document.getElementById('screenshot-btn');
+        const screenshotModal = document.getElementById('screenshot-modal');
+        const closeScreenshotModal = document.getElementById('close-screenshot-modal');
+        const screenshotContainer = document.getElementById('screenshot-container');
+        const downloadBtn = document.getElementById('download-btn');
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+
+        greetingEl.textContent = `${name}，距离2026年还有`;
+
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playCountdownVoice(number) {
+            if (!audioContext) initAudio();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+
+            speakNumber(number);
+        }
+
+        function speakNumber(number) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(number.toString());
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function playBellSound() {
+            if (!audioContext) initAudio();
+            
+            const frequencies = [523.25, 659.25, 783.99, 1046.50];
+            frequencies.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.5);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 1.5);
+                }, index * 300);
+            });
+        }
+
+        function playCelebrationSound() {
+            if (!audioContext) initAudio();
+            
+            const notes = [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50];
+            notes.forEach((freq, index) => {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.value = freq;
+                    oscillator.type = 'triangle';
+                    
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }, index * 150);
+            });
+        }
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = TARGET_DATE - now;
+
+            if (distance <= 0) {
+                clearInterval(countdownInterval);
+                if (!isCountdownDone) {
+                    isCountdownDone = true;
+                    showNewYear();
+                }
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const prevSeconds = parseInt(secondsEl.textContent);
+            
+            updateTimeValue(daysEl, days, 3);
+            updateTimeValue(hoursEl, hours, 2);
+            updateTimeValue(minutesEl, minutes, 2);
+            updateTimeValue(secondsEl, seconds, 2);
+
+            if (seconds !== prevSeconds) {
+                secondsEl.classList.add('bounce');
+                setTimeout(() => secondsEl.classList.remove('bounce'), 500);
+            }
+
+            if (distance <= 10000 && distance > 0) {
+                const remainingSeconds = Math.ceil(distance / 1000);
+                if (remainingSeconds <= 10 && remainingSeconds > 0) {
+                    playCountdownVoice(remainingSeconds);
+                    secondsEl.classList.add('urgent');
+                    secondsEl.classList.add('flash');
+                    setTimeout(() => secondsEl.classList.remove('flash'), 300);
+                }
+            }
+        }
+
+        function updateTimeValue(element, value, minLength) {
+            const prevValue = element.textContent;
+            const newValue = value.toString().padStart(minLength, '0');
+            
+            if (prevValue !== newValue) {
+                element.textContent = newValue;
+                element.classList.add('flash');
+                setTimeout(() => element.classList.remove('flash'), 300);
+            }
+        }
+
+        function showNewYear() {
+            document.getElementById('countdown').style.display = 'none';
+            greetingEl.style.display = 'none';
+            newYearTextEl.style.display = 'block';
+            
+            playBellSound();
+            setTimeout(() => playCelebrationSound(), 2000);
+            
+            setTimeout(() => {
+                modalMessage.textContent = `${name}，2026跨年喜乐！\n愿新的一年，万事如意，心想事成！`;
+                greetingModal.classList.add('show');
+            }, 3000);
+            
+            launchFireworks();
+        }
+
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            snowflake.style.opacity = Math.random() * 0.5 + 0.5;
+            snowflake.style.animationDuration = Math.random() * 3 + 5 + 's';
+            document.body.appendChild(snowflake);
+            
+            setTimeout(() => snowflake.remove(), 8000);
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#ffd700', '#4ecdc4', '#45b7d1', '#96ceb4', '#ff9ff3'];
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.animationDuration = Math.random() * 2 + 3 + 's';
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 5000);
+        }
+
+        function initParticles() {
+            setInterval(createSnowflake, 300);
+            if (isCountdownDone) {
+                setInterval(createConfetti, 100);
+            }
+        }
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        const fireworks = [];
+        const particles = [];
+
+        class Firework {
+            constructor(x, y, targetY) {
+                this.x = x;
+                this.y = y;
+                this.targetY = targetY;
+                this.speed = 8;
+                this.angle = -Math.PI / 2;
+                this.hue = Math.random() * 360;
+                this.brightness = Math.random() * 50 + 50;
+                this.exploded = false;
+            }
+
+            update() {
+                this.y -= this.speed;
+                this.speed *= 0.98;
+                
+                if (this.y <= this.targetY || this.speed < 2) {
+                    this.exploded = true;
+                    this.explode();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = `hsl(${this.hue}, 100%, ${this.brightness}%)`;
+                ctx.fill();
+            }
+
+            explode() {
+                const particleCount = 80;
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (Math.PI * 2 / particleCount) * i;
+                    const speed = Math.random() * 6 + 2;
+                    particles.push(new Particle(this.x, this.y, angle, speed, this.hue));
+                }
+            }
+        }
+
+        class Particle {
+            constructor(x, y, angle, speed, hue) {
+                this.x = x;
+                this.y = y;
+                this.angle = angle;
+                this.speed = speed;
+                this.hue = hue;
+                this.brightness = Math.random() * 50 + 50;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.02 + 0.015;
+                this.gravity = 0.05;
+            }
+
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.speed *= 0.98;
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${this.hue}, 100%, ${this.brightness}%, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        function launchFireworks() {
+            const fireworkCount = 10;
+            for (let i = 0; i < fireworkCount; i++) {
+                setTimeout(() => {
+                    const x = Math.random() * canvas.width;
+                    const targetY = Math.random() * canvas.height * 0.5 + 50;
+                    fireworks.push(new Firework(x, canvas.height, targetY));
+                }, i * 300);
+            }
+        }
+
+        function animateFireworks() {
+            // 使用透明填充，避免累积变黑
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].exploded) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateFireworks);
+        }
+
+        fireworkBtn.addEventListener('click', () => {
+            if (!audioContext) initAudio();
+            launchFireworks();
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            greetingModal.classList.remove('show');
+        });
+
+        closeModal.addEventListener('click', () => {
+            greetingModal.classList.remove('show');
+        });
+
+        closeScreenshotModal.addEventListener('click', () => {
+            screenshotModal.classList.remove('show');
+        });
+
+        screenshotBtn.addEventListener('click', async () => {
+            try {
+                const mainContent = document.getElementById('main-content');
+                const canvas = await html2canvas(mainContent, {
+                    backgroundColor: 'transparent',
+                    scale: 2,
+                    useCORS: true
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const img = document.createElement('img');
+                img.src = imgData;
+                img.className = 'screenshot-preview';
+                
+                screenshotContainer.innerHTML = '';
+                screenshotContainer.appendChild(img);
+                
+                downloadBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = '2026跨年倒计时.png';
+                    link.href = imgData;
+                    link.click();
+                };
+                
+                screenshotModal.classList.add('show');
+            } catch (error) {
+                console.error('截图生成失败:', error);
+                alert('截图生成失败，请重试');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.modal-content')) return;
+            if (e.target === greetingModal) {
+                greetingModal.classList.remove('show');
+            }
+            if (e.target === screenshotModal) {
+                screenshotModal.classList.remove('show');
+            }
+        });
+
+        countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+        initParticles();
+        animateFireworks();
+    </script>
+</body>
+</html>
