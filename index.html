@@ -638,14 +638,17 @@
             }
         }
 
-        function launchFireworks() {
-            const fireworkCount = 10;
+        // 修改烟花发射函数，支持指定坐标
+        function launchFireworks(x = null, y = null) {
+            const fireworkCount = 5;
             for (let i = 0; i < fireworkCount; i++) {
                 setTimeout(() => {
-                    const x = Math.random() * canvas.width;
+                    // 如果没有指定坐标，使用随机位置；否则使用点击位置
+                    const startX = x !== null ? x : Math.random() * canvas.width;
+                    const startY = y !== null ? y : canvas.height;
                     const targetY = Math.random() * canvas.height * 0.5 + 50;
-                    fireworks.push(new Firework(x, canvas.height, targetY));
-                }, i * 300);
+                    fireworks.push(new Firework(startX, startY, targetY));
+                }, i * 100);
             }
         }
 
@@ -672,9 +675,19 @@
             requestAnimationFrame(animateFireworks);
         }
 
+        // 点击按钮放烟花
         fireworkBtn.addEventListener('click', () => {
             if (!audioContext) initAudio();
             launchFireworks();
+        });
+
+        // 点击页面任意位置放烟花
+        document.addEventListener('click', (e) => {
+            if (!audioContext) initAudio();
+            // 获取点击位置相对于视口的坐标
+            const x = e.clientX;
+            const y = e.clientY;
+            launchFireworks(x, y);
         });
 
         closeModalBtn.addEventListener('click', () => {
